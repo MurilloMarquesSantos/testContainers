@@ -20,7 +20,7 @@ public class LoginService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     public LoginResponse login(LoginRequest request) throws BadRequestException {
-        Optional<User> user = userRepository.findByName(request.getName());
+        Optional<User> user = userRepository.findByUsername(request.getName());
         if (user.isEmpty() || !passwordEncoder.matches(request.getPassword(), user.get().getPassword())) {
             throw new BadRequestException("No user found!");
         }

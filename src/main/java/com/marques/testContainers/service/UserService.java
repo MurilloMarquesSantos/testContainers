@@ -3,6 +3,7 @@ package com.marques.testContainers.service;
 import com.marques.testContainers.domain.User;
 import com.marques.testContainers.repository.UserRepository;
 import com.marques.testContainers.request.UserRequest;
+import com.marques.testContainers.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,15 +20,22 @@ public class UserService {
     private final RolesService rolesService;
     private final BCryptPasswordEncoder encoder;
 
-    public User createNewUser(UserRequest userRequest) throws BadRequestException {
-        User user = User.builder().name(userRequest.getName())
+    public UserResponse createNewUser(UserRequest userRequest) throws BadRequestException {
+        User user = User.builder().username(userRequest.getName())
                 .password(encoder.encode(userRequest.getPassword()))
                 .roles(Collections.singleton(rolesService.getRoleByName("ADMIN")))
                 .build();
-        return userRepository.save(user);
+        userRepository.save(user);
+        return UserResponse.builder().username(userRequest.getName())
+                .password(userRequest.getPassword())
+                .build();
+
     }
 
-    public List<User> listAll() {
-        return userRepository.findAll();
+    public List<UserResponse> listAll() {
+        return userRepository.findAll().stream()
+                .map(user -> new UserResponse(user.getUsername(), user.getPassword()))
+                .toList();
+
     }
 }
