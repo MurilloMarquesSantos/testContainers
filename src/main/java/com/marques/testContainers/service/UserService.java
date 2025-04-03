@@ -21,15 +21,19 @@ public class UserService {
     private final BCryptPasswordEncoder encoder;
 
     public UserResponse createNewUser(UserRequest userRequest) throws BadRequestException {
-        User user = User.builder().username(userRequest.getName())
+        if(userRepository.existsByUsername(userRequest.getUsername())){
+           throw new BadRequestException("This user already Exists");
+        }
+        User user = User.builder().username(userRequest.getUsername())
                 .password(encoder.encode(userRequest.getPassword()))
                 .roles(Collections.singleton(rolesService.getRoleByName("ADMIN")))
                 .build();
         userRepository.save(user);
-        return UserResponse.builder().username(userRequest.getName())
+
+        return UserResponse.builder()
+                .username(userRequest.getUsername())
                 .password(userRequest.getPassword())
                 .build();
-
     }
 
     public List<UserResponse> listAll() {

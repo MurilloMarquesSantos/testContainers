@@ -4,6 +4,8 @@ jwt:
   private:
     key: classpath:app.privKey
 spring:
+  application:
+    name: testContainersApplication
   datasource:
     url: jdbc:mysql://127.0.0.1:3306/testContainers?createDatabaseIfNotExist=true
     username: UserJava

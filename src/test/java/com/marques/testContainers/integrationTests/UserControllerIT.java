@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marques.testContainers.domain.Roles;
-import com.marques.testContainers.domain.User;
 import com.marques.testContainers.repository.RolesRepository;
 import com.marques.testContainers.request.UserRequest;
 import com.marques.testContainers.response.UserResponse;
@@ -86,7 +85,7 @@ class UserControllerIT extends AbstractIntegration {
 
         UserResponse userResponse = mapper.readValue(returnedContent, UserResponse.class);
 
-        assertThat(userResponse.getUsername()).isEqualTo(userRequest.getName());
+        assertThat(userResponse.getUsername()).isEqualTo(userRequest.getUsername());
     }
 
     @Test
@@ -96,7 +95,7 @@ class UserControllerIT extends AbstractIntegration {
         RestAssured.given()
                 .spec(specification)
                 .contentType("application/json")
-                .body(userRequest)
+                .body(new UserRequest("Maria", "Maria"))
                 .when()
                 .post()
                 .then()
@@ -120,10 +119,10 @@ class UserControllerIT extends AbstractIntegration {
                 .body().asString();
 
 
-        List<User> userList = Arrays.asList(mapper.readValue(returnedContent, User[].class));
+        List<UserResponse> userList = Arrays.asList(mapper.readValue(returnedContent, UserResponse[].class));
 
-        assertThat(userList).isNotNull();
+        assertThat(userList).isNotNull().hasSize(1);
 
-        assertThat(userList).hasSize(1);
+        assertThat(userList.getFirst().getUsername()).isEqualTo("Maria");
     }
 }
