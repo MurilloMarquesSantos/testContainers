@@ -6,19 +6,23 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marques.testContainers.domain.Roles;
 import com.marques.testContainers.repository.RolesRepository;
+import com.marques.testContainers.repository.UserRepository;
 import com.marques.testContainers.request.LoginRequest;
 import com.marques.testContainers.request.UserRequest;
 import com.marques.testContainers.response.LoginResponse;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = "server.port=8888")
 class LoginControllerIT extends AbstractIntegration {
 
@@ -28,6 +32,9 @@ class LoginControllerIT extends AbstractIntegration {
 
     @Autowired
     private RolesRepository rolesRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @BeforeEach
     void setUp() {
@@ -43,7 +50,7 @@ class LoginControllerIT extends AbstractIntegration {
 
         rolesRepository.save(new Roles(null, "ADMIN"));
 
-        RestAssured.given()
+        RestAssured.given() // adicionando o usuário que faremos login
                 .spec(specification)
                 .contentType("application/json")
                 .body(new UserRequest("Murillo", "Murillo"))
@@ -53,6 +60,11 @@ class LoginControllerIT extends AbstractIntegration {
                 .statusCode(201)
                 .extract()
                 .body().asString();
+    }
+    @AfterAll
+    void cleanDatabase(){
+        userRepository.deleteAll();
+        rolesRepository.deleteAll();
     }
 
     @Test

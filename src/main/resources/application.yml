@@ -7,9 +7,9 @@ spring:
   application:
     name: testContainersApplication
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/testContainers?createDatabaseIfNotExist=true
-    username: UserJava
-    password: UserJava@
+    url: # your database url
+    username: # your username
+    password: # your password
   jpa:
     hibernate:
       ddl-auto: update

@@ -14,7 +14,8 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class) // habilitando ordem nos testes
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserRepositoryTest extends AbstractIntegration {
 
     @Autowired
@@ -27,19 +28,22 @@ class UserRepositoryTest extends AbstractIntegration {
         user = User.builder()
                 .username("Murillo")
                 .password("Murillo")
-                .roles(Set.of(new Roles(null, "ADMIN")))
+                .roles(Set.of(new Roles(null, "ADMIN"))) //criando um user para ser salvo
                 .build();
     }
 
+    @AfterAll
+    void cleanDatabase(){
+        userRepository.deleteAll();
+    }
     @Test
-    @Order(1)
+    @Order(1) // importante que esse seja o primeiro para que os testes não falhem
     void save_ReturnsUser_WhenSuccessful(){
 
         User savedUser = userRepository.save(user);
 
         assertThat(savedUser.getUsername()).isEqualTo(user.getUsername());
     }
-
     @Test
     void findAll_ReturnsListOfUser_WhenSuccessful(){
 
@@ -48,7 +52,6 @@ class UserRepositoryTest extends AbstractIntegration {
         assertThat(userList).isNotEmpty().hasSize(1);
 
     }
-
     @Test
     void findByUsername_ReturnsOptionalOfUser_WhenSuccessful(){
 
@@ -59,8 +62,6 @@ class UserRepositoryTest extends AbstractIntegration {
         assertThat(userOpt.get().getUsername()).isEqualTo(user.getUsername());
 
     }
-
-
     @Test
     void existsByUsername_ReturnsTrue_WhenSuccessful(){
 
