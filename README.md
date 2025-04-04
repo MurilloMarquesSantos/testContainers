@@ -9,6 +9,6 @@
 ## Overview
 This project was created to share knowledge with those who struggle to develop integration tests using TestContainers and to implement Spring Security with JWT.
 
-## [LinkedIn Article](https://www.linkedin.com/seu-artigo-aqui)
+## [LinkedIn Article](https://www.linkedin.com/pulse/spring-security-essentials-testcontainers-murillo-marques-yhiec)
 In this article, I explain how to build this project from scratch.
 
